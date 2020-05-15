@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fontisto_flutter/fontisto_flutter.dart';
@@ -11,28 +10,32 @@ class SearchProduct extends StatefulWidget {
 
 class _SearchProductState extends State<SearchProduct> {
   List<SearchModel> searchModels = List();
+  String search;
+  bool processStatus = false;
 
   @override
   void initState() {
     super.initState();
-    readDate();
   }
 
   Future<void> readDate() async {
+    if (searchModels.length != 0) {
+      searchModels.clear();
+    }
+
     String url =
-        'http://210.86.171.110:89/webapi3/api/limit?name=สลัด&start=1&end=10';
+        'http://210.86.171.110:89/webapi3/api/limit?name=$search&start=1&end=50';
     try {
       Response response = await Dio().get(url);
       // print(object(response));
-      
-      for (var map in response.data){
+
+      for (var map in response.data) {
         SearchModel model = SearchModel.fromJson(map);
         setState(() {
           searchModels.add(model);
+          processStatus = false;
         });
-
       }
-
     } catch (e) {}
   }
 
@@ -41,7 +44,17 @@ class _SearchProductState extends State<SearchProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(child: myContent()),
+      body: SafeArea(
+          child: Stack(
+        children: <Widget>[
+          processStatus
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : mySizeBox(),
+          myContent(),
+        ],
+      )),
     );
   }
 
@@ -52,7 +65,11 @@ class _SearchProductState extends State<SearchProduct> {
   }
 
   Widget myContent() => Column(
-        children: <Widget>[mySizeBox(), searchBox(), showListResult()],
+        children: <Widget>[
+          mySizeBox(),
+          searchBox(),
+          showListResult(),
+        ],
       );
 
   Widget showListResult() {
@@ -61,7 +78,12 @@ class _SearchProductState extends State<SearchProduct> {
         : Expanded(
             child: ListView.builder(
               itemCount: searchModels.length,
-              itemBuilder: (context, index) => Text(searchModels[index].name),
+              itemBuilder: (context, index) => Card(
+                child: Container(
+                  margin: EdgeInsets.all(16.0),
+                  child: Text(searchModels[index].name),
+                ),
+              ),
             ),
           );
   }
@@ -80,7 +102,12 @@ class _SearchProductState extends State<SearchProduct> {
   IconButton searchButton() {
     return IconButton(
       icon: Icon(Istos.search),
-      onPressed: () {},
+      onPressed: () {
+        setState(() {
+          processStatus = true;
+          readDate();
+        });
+      },
     );
   }
 
@@ -90,8 +117,10 @@ class _SearchProductState extends State<SearchProduct> {
         width: MediaQuery.of(context).size.width - (2 * 58),
         height: 50.0,
         child: TextField(
+          onChanged: (value) => search = value.trim(),
           decoration: InputDecoration(
             hintText: 'บาร์โค้ด/รหัสสินค้า/กลุ่มคำชื่อสินค้า',
+            hintStyle: TextStyle(color: Colors.black26),
             contentPadding: EdgeInsets.only(
               left: 10.0,
             ),
