@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fontisto_flutter/fontisto_flutter.dart';
 import 'package:rawinpornshop/models/search_model.dart';
+import 'package:rawinpornshop/utility/normal_dialog.dart';
 
 class SearchProduct extends StatefulWidget {
   @override
@@ -103,10 +104,14 @@ class _SearchProductState extends State<SearchProduct> {
     return IconButton(
       icon: Icon(Istos.search),
       onPressed: () {
-        setState(() {
+        if (search == null || search.isEmpty) {
+          normalDialog(context, "กรุณากรอก Search ด้วยค่ะ");
+        } else {
+          setState(() {
           processStatus = true;
           readDate();
         });
+        }
       },
     );
   }
