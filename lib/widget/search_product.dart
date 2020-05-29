@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fontisto_flutter/fontisto_flutter.dart';
 import 'package:rawinpornshop/models/search_model.dart';
+import 'package:rawinpornshop/utility/my_style.dart';
 import 'package:rawinpornshop/utility/normal_dialog.dart';
 
 class SearchProduct extends StatefulWidget {
@@ -67,10 +68,47 @@ class _SearchProductState extends State<SearchProduct> {
 
   Widget myContent() => Column(
         children: <Widget>[
-          mySizeBox(),
+          MyStye().sizedBox(16.0),
           searchBox(),
+          MyStye().sizedBox(10.0),
+          searchModels.length == 0 ? MyStye().sizedBox(1.0) : headList(),
           showListResult(),
         ],
+      );
+
+  Widget headList() => Card(
+        color: Colors.blue,
+        child: Container(
+          padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'ลำดับ',
+                      style: MyStye().titleH2white(),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 17,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'สินค้า',
+                      style: MyStye().titleH2white(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       );
 
   Widget showListResult() {
@@ -79,14 +117,36 @@ class _SearchProductState extends State<SearchProduct> {
         : Expanded(
             child: ListView.builder(
               itemCount: searchModels.length,
-              itemBuilder: (context, index) => Card(
-                child: Container(
-                  margin: EdgeInsets.all(16.0),
-                  child: Text(searchModels[index].name),
-                ),
-              ),
+              itemBuilder: (context, index) => showCard(index),
             ),
           );
+  }
+
+  Card showCard(int index) {
+    return Card(
+      child: Container(
+        margin: EdgeInsets.only(top: 16.0,bottom: 16.0,right: 16.0),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              flex: 3,
+              child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '${index + 1}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 17,
+              child: Text(searchModels[index].name),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Row searchBox() {
@@ -105,12 +165,12 @@ class _SearchProductState extends State<SearchProduct> {
       icon: Icon(Istos.search),
       onPressed: () {
         if (search == null || search.isEmpty) {
-          normalDialog(context, "กรุณากรอก Search ด้วยค่ะ");
+          normalDialog(context, "กรุณาใส่ข้อมุล Search ด้วยค่ะ");
         } else {
           setState(() {
-          processStatus = true;
-          readDate();
-        });
+            processStatus = true;
+            readDate();
+          });
         }
       },
     );
