@@ -14,29 +14,56 @@ class _SearchProductState extends State<SearchProduct> {
   List<SearchModel> searchModels = List();
   String search;
   bool processStatus = false;
+  bool resultSearch = true;
+  int amountSearch = 20;
+  int start = 1;
+  bool lazyLoad = true;
+
+  ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        print('At the End');
+        setState(() {
+          start = amountSearch + 1;
+          amountSearch = amountSearch + 20;
+          lazyLoad = false;
+          readData();
+        });
+      }
+    });
   }
 
-  Future<void> readDate() async {
-    if (searchModels.length != 0) {
+  Future<void> readData() async {
+    if (searchModels.length != 0 && lazyLoad) {
       searchModels.clear();
     }
 
     String url =
-        'http://210.86.171.110:89/webapi3/api/limit?name=$search&start=1&end=50';
+        'http://210.86.171.110:89/webapi3/api/limit?name=$search&start=$start&end=$amountSearch';
     try {
       Response response = await Dio().get(url);
       // print(object(response));
 
-      for (var map in response.data) {
-        SearchModel model = SearchModel.fromJson(map);
+      if (response.toString() == '[]') {
         setState(() {
-          searchModels.add(model);
+          resultSearch = false;
           processStatus = false;
         });
+      } else {
+        for (var map in response.data) {
+          SearchModel model = SearchModel.fromJson(map);
+          setState(() {
+            searchModels.add(model);
+            processStatus = false;
+            resultSearch = true;
+          });
+        }
       }
     } catch (e) {}
   }
@@ -50,13 +77,19 @@ class _SearchProductState extends State<SearchProduct> {
           child: Stack(
         children: <Widget>[
           processStatus
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : mySizeBox(),
+              ? myProcess()
+              : resultSearch
+                  ? mySizeBox()
+                  : Center(child: Text('ไม่มีคำ $search ในฐานข้อมูล')),
           myContent(),
         ],
       )),
+    );
+  }
+
+  Center myProcess() {
+    return Center(
+      child: CircularProgressIndicator(),
     );
   }
 
@@ -116,6 +149,7 @@ class _SearchProductState extends State<SearchProduct> {
         ? showNoSearch()
         : Expanded(
             child: ListView.builder(
+              controller: scrollController,
               itemCount: searchModels.length,
               itemBuilder: (context, index) => showCard(index),
             ),
@@ -125,12 +159,13 @@ class _SearchProductState extends State<SearchProduct> {
   Card showCard(int index) {
     return Card(
       child: Container(
-        margin: EdgeInsets.only(top: 16.0,bottom: 16.0,right: 16.0),
+        margin: EdgeInsets.only(top: 16.0, bottom: 16.0, right: 16.0),
         child: Row(
           children: <Widget>[
             Expanded(
               flex: 3,
-              child: Row(mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
                     '${index + 1}',
@@ -163,13 +198,17 @@ class _SearchProductState extends State<SearchProduct> {
   IconButton searchButton() {
     return IconButton(
       icon: Icon(Istos.search),
-      onPressed: () {
+      onPressed: () async {
+        lazyLoad = true;
+        start = 1;
+        amountSearch = 20;
         if (search == null || search.isEmpty) {
+          resultSearch = true;
           normalDialog(context, "กรุณาใส่ข้อมุล Search ด้วยค่ะ");
         } else {
           setState(() {
             processStatus = true;
-            readDate();
+            readData();
           });
         }
       },
