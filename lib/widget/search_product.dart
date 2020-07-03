@@ -1,9 +1,11 @@
+import 'package:barcode_scan/barcode_scan.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fontisto_flutter/fontisto_flutter.dart';
 import 'package:rawinpornshop/models/search_model.dart';
 import 'package:rawinpornshop/utility/my_style.dart';
 import 'package:rawinpornshop/utility/normal_dialog.dart';
+import 'package:rawinpornshop/widget/detail_product.dart';
 
 class SearchProduct extends StatefulWidget {
   @override
@@ -156,29 +158,39 @@ class _SearchProductState extends State<SearchProduct> {
           );
   }
 
-  Card showCard(int index) {
-    return Card(
-      child: Container(
-        margin: EdgeInsets.only(top: 16.0, bottom: 16.0, right: 16.0),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              flex: 3,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    '${index + 1}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
+  Widget showCard(int index) {
+    return GestureDetector(
+      onTap: () {
+        MaterialPageRoute route = MaterialPageRoute(
+          builder: (context) => DetailProduct(
+            searchModel: searchModels[index],
+          ),
+        );
+        Navigator.push(context, route);
+      },
+      child: Card(
+        child: Container(
+          margin: EdgeInsets.only(top: 16.0, bottom: 16.0, right: 16.0),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                flex: 3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      '${index + 1}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              flex: 17,
-              child: Text(searchModels[index].name),
-            ),
-          ],
+              Expanded(
+                flex: 17,
+                child: Text(searchModels[index].name),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -238,8 +250,18 @@ class _SearchProductState extends State<SearchProduct> {
         children: <Widget>[
           IconButton(
             icon: Icon(Istos.shopping_barcode),
-            onPressed: () {},
+            onPressed: () {
+              qrThread();
+            },
           ),
         ],
       );
+
+  Future<Null> qrThread() async {
+    try {
+      var result = await BarcodeScanner.scan();
+      print('result ========= ${result.rawContent}');
+    } catch (e) {
+    }
+  }
 }
