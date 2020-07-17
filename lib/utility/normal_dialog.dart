@@ -9,10 +9,12 @@ Future<Null> normalDialog(BuildContext context, String title) async {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
-            title,
-            style: GoogleFonts.itim(
-              textStyle: TextStyle(color: Colors.blue),
+          Container(width: 250,
+            child: Text(
+              title,
+              style: GoogleFonts.itim(
+                textStyle: TextStyle(color: Colors.blue),
+              ),
             ),
           ),
         ],

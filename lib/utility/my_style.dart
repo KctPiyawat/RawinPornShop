@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
-class MyStye {
+class MyStyle {
+
+  Widget showProgress(){
+    return Center(child: CircularProgressIndicator(),);
+
+  }
+
   TextStyle titleH2() {
     return TextStyle(
       fontSize: 16.0,
@@ -20,5 +26,5 @@ class MyStye {
     return SizedBox(height: height,);
   }
 
-  MyStye();
+  MyStyle();
 }

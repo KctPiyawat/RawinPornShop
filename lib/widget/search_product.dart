@@ -20,6 +20,7 @@ class _SearchProductState extends State<SearchProduct> {
   int amountSearch = 20;
   int start = 1;
   bool lazyLoad = true;
+  bool barCodeBool = false;
 
   ScrollController scrollController = ScrollController();
 
@@ -84,6 +85,7 @@ class _SearchProductState extends State<SearchProduct> {
                   ? mySizeBox()
                   : Center(child: Text('ไม่มีคำ $search ในฐานข้อมูล')),
           myContent(),
+          barCodeBool ? MyStyle().showProgress() : mySizeBox(),
         ],
       )),
     );
@@ -103,10 +105,10 @@ class _SearchProductState extends State<SearchProduct> {
 
   Widget myContent() => Column(
         children: <Widget>[
-          MyStye().sizedBox(16.0),
+          MyStyle().sizedBox(16.0),
           searchBox(),
-          MyStye().sizedBox(10.0),
-          searchModels.length == 0 ? MyStye().sizedBox(1.0) : headList(),
+          MyStyle().sizedBox(10.0),
+          searchModels.length == 0 ? MyStyle().sizedBox(1.0) : headList(),
           showListResult(),
         ],
       );
@@ -124,7 +126,7 @@ class _SearchProductState extends State<SearchProduct> {
                   children: <Widget>[
                     Text(
                       'ลำดับ',
-                      style: MyStye().titleH2white(),
+                      style: MyStyle().titleH2white(),
                     ),
                   ],
                 ),
@@ -136,7 +138,7 @@ class _SearchProductState extends State<SearchProduct> {
                   children: <Widget>[
                     Text(
                       'สินค้า',
-                      style: MyStye().titleH2white(),
+                      style: MyStyle().titleH2white(),
                     ),
                   ],
                 ),
@@ -261,7 +263,38 @@ class _SearchProductState extends State<SearchProduct> {
     try {
       var result = await BarcodeScanner.scan();
       print('result ========= ${result.rawContent}');
-    } catch (e) {
-    }
+      String qrCode = result.rawContent;
+
+      if (qrCode != null) {
+        setState(() {
+          barCodeBool = true;
+        });
+        
+      }
+      String url1 =
+          'http://210.86.171.110:89/webapi3/api/limit?name=$qrCode&start=1&end=10';
+      await Dio().get(url1).then((value) {
+        // print('value  =============================... $value');
+
+        setState(() {
+          barCodeBool = false;
+        });
+
+        if (value.toString() == '[]') {
+          normalDialog(context, 'ไม่มี BarCode $qrCode ในฐานข้อมูล');
+        } else {
+          var result = value.data;
+          for (var map in result) {
+            SearchModel searchModel = SearchModel.fromJson(map);
+            MaterialPageRoute route = MaterialPageRoute(
+              builder: (context) => DetailProduct(
+                searchModel: searchModel,
+              ),
+            );
+            Navigator.push(context, route);
+          }
+        }
+      });
+    } catch (e) {}
   }
 }
