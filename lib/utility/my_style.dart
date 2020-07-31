@@ -47,5 +47,11 @@ class MyStyle {
     );
   }
 
+  SizedBox sizedBox16() {
+    return SizedBox(
+      height: 16,
+    );
+  }
+
   MyStyle();
 }

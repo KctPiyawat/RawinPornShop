@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:intl/intl.dart';
 import 'package:rawinpornshop/models/search_model.dart';
 import 'package:rawinpornshop/utility/my_style.dart';
@@ -28,9 +32,15 @@ class _DetailProductState extends State<DetailProduct> {
     for (var plsModel in objPLs) {
       Map<String, dynamic> map = plsModel.toJson();
       PLs pLs = PLs.fromJson(map);
-      setState(() {
-        plss.add(pLs);
-      });
+      String testPrice = pLs.price9;
+      if (testPrice.isNotEmpty) {
+        double douTestPrice = double.parse(testPrice);
+        if (douTestPrice != 0) {
+          setState(() {
+            plss.add(pLs);
+          });
+        }
+      }
     }
   }
 
@@ -40,15 +50,18 @@ class _DetailProductState extends State<DetailProduct> {
       appBar: AppBar(),
       body: Column(
         children: <Widget>[
-          buildText(context, 'รหัสสินค้า = ${model.code}'),
-          buildText(context, 'ชื่อสินค้า = ${model.name}'),
+          MyStyle().sizedBox16(),
+          // buildText(context, 'รหัสสินค้า : ${model.code}'),
+          MyStyle().sizedBox16(),
+          buildText(context, model.code,model.name),
           showListPLs(),
+          showPicture(),
         ],
       ),
     );
   }
 
-  Widget buildText(BuildContext context, String string) {
+  Widget buildText(BuildContext context, String string, String string2) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -56,9 +69,20 @@ class _DetailProductState extends State<DetailProduct> {
           child: Container(
               padding: EdgeInsets.all(8),
               width: MediaQuery.of(context).size.width * 0.8,
-              child: Text(
-                string,
-                style: MyStyle().titleH2(),
+              child: Container(width: 300,
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      string,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    Text(' : '),
+                    Text(
+                      string2,
+                      style: TextStyle(color: Colors.blue)
+                    ),
+                  ],
+                ),
               )),
         ),
       ],
@@ -72,21 +96,31 @@ class _DetailProductState extends State<DetailProduct> {
         width: MediaQuery.of(context).size.width * 0.8,
         child: Column(
           children: <Widget>[
-            Container(height: 35,
+            Container(
+              height: 35,
               decoration: BoxDecoration(color: Colors.grey.shade300),
               child: Row(
                 children: <Widget>[
                   Expanded(
                     flex: 2,
-                    child: Text('บาร์โค๊ด',style: MyStyle().titleH3(),),
+                    child: Text(
+                      'บาร์โค๊ด',
+                      style: MyStyle().titleH3(),
+                    ),
                   ),
                   Expanded(
                     flex: 2,
-                    child: Text('หน่วยนับ',style: MyStyle().titleH3(),),
+                    child: Text(
+                      'หน่วยนับ',
+                      style: MyStyle().titleH3(),
+                    ),
                   ),
                   Expanded(
                     flex: 1,
-                    child: Text('ราคา',style: MyStyle().titleH3(),),
+                    child: Text(
+                      'ราคา',
+                      style: MyStyle().titleH3(),
+                    ),
                   ),
                 ],
               ),
@@ -119,13 +153,47 @@ class _DetailProductState extends State<DetailProduct> {
   }
 
   String setupPrice(String price9) {
-    // List<String> list = price9.split('.');
-    // return list[0];
+    String result;
 
-    double priceDou = double.parse(price9.trim());
-    var myFormat = NumberFormat('#,###', 'en_US');
-    String result = myFormat.format(priceDou);
+    if (price9.isEmpty) {
+      result = '-';
+    } else {
+      double priceDou = double.parse(price9.trim());
+      if (priceDou == 0) {
+        result = '-';
+      } else {
+        var myFormat = NumberFormat('#,###', 'en_US');
+        result = myFormat.format(priceDou);
+      }
+    }
 
     return result;
+  }
+
+  Widget showPicture() {
+    // Uint8List uint8list = base64Decode(model.pic4);
+
+    List<Uint8List> uint8Lists = List();
+
+    List<String> picStrings = [model.pic1, model.pic2, model.pic3, model.pic4];
+    for (var string in picStrings) {
+      if (string.isNotEmpty) {
+        uint8Lists.add(base64Decode(string));
+      }
+    }
+
+    // uint8Lists.add(base64Decode(model.pic1));
+    // uint8Lists.add(base64Decode(model.pic2));
+    // uint8Lists.add(base64Decode(model.pic3));
+    // uint8Lists.add(base64Decode(model.pic4));
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.3,
+      child: Swiper(
+        itemCount: uint8Lists.length,
+        itemBuilder: (context, index) => Image.memory(uint8Lists[index]),
+        pagination: SwiperPagination(),
+      ),
+    );
   }
 }

@@ -39,9 +39,9 @@ class SearchModel {
       });
     }
     pic1 = json['Pic1'];
-    pic1 = json['Pic2'];
-    pic1 = json['Pic3'];
-    pic1 = json['Pic4'];
+    pic2 = json['Pic2'];
+    pic3 = json['Pic3'];
+    pic4 = json['Pic4'];
 
   }
 
