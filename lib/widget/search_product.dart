@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fontisto_flutter/fontisto_flutter.dart';
 import 'package:rawinpornshop/models/search_model.dart';
+import 'package:rawinpornshop/utility/my_constant.dart';
 import 'package:rawinpornshop/utility/my_style.dart';
 import 'package:rawinpornshop/utility/normal_dialog.dart';
 import 'package:rawinpornshop/widget/detail_product.dart';
@@ -48,7 +49,7 @@ class _SearchProductState extends State<SearchProduct> {
     }
 
     String url =
-        'http://210.86.171.110:89/webapi3/api/limit?name=$search&start=$start&end=$amountSearch';
+        '${MyConstant().domain}/webapi3/api/limit?name=$search&start=$start&end=$amountSearch';
     try {
       Response response = await Dio().get(url);
       // print(object(response));
@@ -272,7 +273,7 @@ class _SearchProductState extends State<SearchProduct> {
         
       }
       String url1 =
-          'http://210.86.171.110:89/webapi3/api/limit?name=$qrCode&start=1&end=10';
+          '${MyConstant().domain}/webapi3/api/limit?name=$qrCode&start=1&end=10';
       await Dio().get(url1).then((value) {
         // print('value  =============================... $value');
 

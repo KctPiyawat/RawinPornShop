@@ -6,11 +6,14 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:intl/intl.dart';
 import 'package:rawinpornshop/models/search_model.dart';
 import 'package:rawinpornshop/utility/my_style.dart';
+import 'package:rawinpornshop/widget/euamp.dart';
+import 'package:rawinpornshop/widget/huajakai.dart';
+import 'package:rawinpornshop/widget/latkabung.dart';
+import 'package:rawinpornshop/widget/nongjok.dart';
 
 class DetailProduct extends StatefulWidget {
   final SearchModel searchModel;
   DetailProduct({Key key, this.searchModel});
-
   @override
   _DetailProductState createState() => _DetailProductState();
 }
@@ -29,12 +32,16 @@ class _DetailProductState extends State<DetailProduct> {
 
   Future<Null> readPLs() async {
     var objPLs = model.pLs;
+    print('objPLs ==>> ${objPLs.toString()}');
+
     for (var plsModel in objPLs) {
       Map<String, dynamic> map = plsModel.toJson();
       PLs pLs = PLs.fromJson(map);
+
       String testPrice = pLs.price9;
       if (testPrice.isNotEmpty) {
         double douTestPrice = double.parse(testPrice);
+
         if (douTestPrice != 0) {
           setState(() {
             plss.add(pLs);
@@ -48,51 +55,91 @@ class _DetailProductState extends State<DetailProduct> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Column(
-        children: <Widget>[
-          MyStyle().sizedBox16(),
-          // buildText(context, 'รหัสสินค้า : ${model.code}'),
-          MyStyle().sizedBox16(),
-          buildText(context, model.code,model.name),
-          showListPLs(),
-          showPicture(),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            MyStyle().sizedBox16(),
+            buildText(context, model.code, model.name),
+            MyStyle().sizedBox16(),
+            showListPLs(),
+            MyStyle().sizedBox16(),
+            showPicture(),
+            MyStyle().sizedBox16(),
+            buildTabHost(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildTabHost() {
+    List<Widget> widgets = [Latkabung(), Euamp(), Nongjok(), Hunjakai()];
+    List<Widget> tabWidgets = [
+      Text('ลาดกระบัง'),
+      Text('ตลาดเอี่ยม'),
+      Text('หนองจอก'),
+      Text('หัวตะเข้')
+    ];
+
+    return Container(
+      height: 300,
+      child: DefaultTabController(
+        length: widgets.length,
+        child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            // title: Text('สาขา',style: MyStyle().titleH3(),),
+            leading: SizedBox(),
+            bottom: TabBar(
+              tabs: tabWidgets,
+              labelColor: Colors.blue.shade900,
+              indicatorColor: Colors.red,
+              // indicatorWeight: 6.0,                                                                                                                                                                                                                                                  ,
+            ),
+          ),
+          body: TabBarView(children: widgets),
+        ),
       ),
     );
   }
 
   Widget buildText(BuildContext context, String string, String string2) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Card(
-          child: Container(
-              padding: EdgeInsets.all(8),
-              width: MediaQuery.of(context).size.width * 0.8,
-              child: Container(width: 300,
-                child: Row(
-                  children: <Widget>[
-                    Text(
-                      string,
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    Text(' : '),
-                    Text(
-                      string2,
-                      style: TextStyle(color: Colors.blue)
-                    ),
-                  ],
+    return Card(
+      child: Container(
+        padding: EdgeInsets.all(8),
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Row(
+              children: [
+                Text(
+                  string,
+                  style: TextStyle(color: Colors.red),
                 ),
-              )),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.8 - 20,
+                  child: Text(
+                    string2,
+                    style: TextStyle(color: Colors.blue.shade700),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
   Widget showListPLs() {
     return Card(
       child: Container(
-        // padding: EdgeInsets.all(8),
+        // padding: EdgeInsets.all(2),
         width: MediaQuery.of(context).size.width * 0.8,
         child: Column(
           children: <Widget>[
@@ -104,12 +151,12 @@ class _DetailProductState extends State<DetailProduct> {
                   Expanded(
                     flex: 2,
                     child: Text(
-                      'บาร์โค๊ด',
+                      'BarCode',
                       style: MyStyle().titleH3(),
                     ),
                   ),
                   Expanded(
-                    flex: 2,
+                    flex: 1,
                     child: Text(
                       'หน่วยนับ',
                       style: MyStyle().titleH3(),
@@ -136,7 +183,7 @@ class _DetailProductState extends State<DetailProduct> {
                     child: Text(plss[index].barcode),
                   ),
                   Expanded(
-                    flex: 2,
+                    flex: 1,
                     child: Text(plss[index].unitName),
                   ),
                   Expanded(
@@ -159,6 +206,7 @@ class _DetailProductState extends State<DetailProduct> {
       result = '-';
     } else {
       double priceDou = double.parse(price9.trim());
+
       if (priceDou == 0) {
         result = '-';
       } else {
@@ -182,17 +230,13 @@ class _DetailProductState extends State<DetailProduct> {
       }
     }
 
-    // uint8Lists.add(base64Decode(model.pic1));
-    // uint8Lists.add(base64Decode(model.pic2));
-    // uint8Lists.add(base64Decode(model.pic3));
-    // uint8Lists.add(base64Decode(model.pic4));
-
     return Container(
       height: MediaQuery.of(context).size.height * 0.3,
       child: Swiper(
         itemCount: uint8Lists.length,
         itemBuilder: (context, index) => Image.memory(uint8Lists[index]),
         pagination: SwiperPagination(),
+        // control: SwiperControl(),
       ),
     );
   }
