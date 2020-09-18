@@ -96,7 +96,7 @@ class _DetailProductState extends State<DetailProduct> {
       );
 
   Widget buildTabHost() {
-    List<Widget> widgets = [Latkabung(), Euamp(), Nongjok(), Hunjakai()];
+    List<Widget> widgets = [Latkabung(searchModel: model,), Euamp(), Nongjok(), Hunjakai()];
     List<Widget> tabWidgets = [
       Text('ลาดกระบัง'),
       Text('ตลาดเอี่ยม'),
