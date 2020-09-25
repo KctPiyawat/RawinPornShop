@@ -5,14 +5,16 @@ import 'package:rawinpornshop/models/search_model.dart';
 import 'package:rawinpornshop/utility/my_constant.dart';
 import 'package:rawinpornshop/utility/my_style.dart';
 
-class Latkabung extends StatefulWidget {
+
+class ProductMis extends StatefulWidget {
   final SearchModel searchModel;
-  Latkabung({Key key, this.searchModel}) : super(key: key);
+  final String whid;
+  ProductMis({Key key, this.searchModel,this.whid}) : super(key: key);
   @override
-  _LatkabungState createState() => _LatkabungState();
+  _ProductMisState createState() => _ProductMisState();
 }
 
-class _LatkabungState extends State<Latkabung> {
+class _ProductMisState extends State<ProductMis> {
   String whid;
   int pid;
   SearchModel model;
@@ -24,8 +26,7 @@ class _LatkabungState extends State<Latkabung> {
     super.initState();
     model = widget.searchModel;
     pid = model.id;
-    whid = MyConstant().whidLatkabang;
-
+    whid = widget.whid;
     readData();
   }
 
@@ -34,14 +35,17 @@ class _LatkabungState extends State<Latkabung> {
     return Scaffold(
       body: productMISmodel == null
           ? MyStyle().showProgress()
-          : Column(
-            children: [
-              Text('Stock คงเหลือ ${productMISmodel.stkWh}'),
-              Text('วันที่รับเข้าล่าสุด ${productMISmodel.reciveLastDate}'),
-              Text('จำนวนรับเข้า ${productMISmodel.reciveLastQty}'),
-              Text('ขายได้หลังรับเข้าล่าสุด ${productMISmodel.saleAfterRC}'),
-              Text('วันที่ขายล่าสุด ${productMISmodel.saleLastDate}'),
-            ],
+          : Center(
+            child: Column(
+              children: [
+                MyStyle().showProductMis('Stock คงเหลือ  ', productMISmodel.stkWh, Colors.purple.shade700),
+                MyStyle().showProductMis('วันที่รับเข้าล่าสุด', productMISmodel.reciveLastDate, Colors.purple.shade700),
+                MyStyle().showProductMis('จำนวนรับเข้า', productMISmodel.reciveLastQty, Colors.purple.shade700),
+                MyStyle().showProductMis('ขายได้หลังรับเข้าล่าสุด', productMISmodel.saleAfterRC, Colors.purple.shade700),
+                MyStyle().showProductMis('วันที่ขายล่าสุด', productMISmodel.saleLastDate, Colors.purple.shade700),
+                     
+              ],
+            ),
           ),
     );
   }

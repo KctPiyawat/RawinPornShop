@@ -11,10 +11,7 @@ import 'package:rawinpornshop/models/search_model.dart';
 import 'package:rawinpornshop/utility/my_constant.dart';
 import 'package:rawinpornshop/utility/my_style.dart';
 import 'package:rawinpornshop/utility/normal_dialog.dart';
-import 'package:rawinpornshop/widget/euamp.dart';
-import 'package:rawinpornshop/widget/huajakai.dart';
-import 'package:rawinpornshop/widget/latkabung.dart';
-import 'package:rawinpornshop/widget/nongjok.dart';
+import 'package:rawinpornshop/widget/product_mis.dart';
 
 class DetailProduct extends StatefulWidget {
   final SearchModel searchModel;
@@ -60,7 +57,8 @@ class _DetailProductState extends State<DetailProduct> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title:  Text('รายละเอียดสินค้า'),
+      appBar: AppBar(
+        title: Text('รายละเอียดสินค้า'),
         actions: <Widget>[barcodeButton()],
       ),
       body: SingleChildScrollView(
@@ -96,35 +94,53 @@ class _DetailProductState extends State<DetailProduct> {
       );
 
   Widget buildTabHost() {
-    List<Widget> widgets = [Latkabung(searchModel: model,), Euamp(), Nongjok(), Hunjakai()];
+    List<Widget> widgets = [
+      ProductMis(
+        searchModel: model,
+        whid: MyConstant().whidLatkabang,
+      ),
+      ProductMis(
+        searchModel: model,
+        whid: MyConstant().whidEuamp,
+      ),
+      ProductMis(
+        searchModel: model,
+        whid: MyConstant().whidNongjok,
+      ),
+      ProductMis(
+        searchModel: model,
+        whid: MyConstant().whidHunjakai,
+      )
+    ];
     List<Widget> tabWidgets = [
-      Text('ลาดกระบัง'),
-      Text('ตลาดเอี่ยม'),
-      Text('หนองจอก'),
-      Text('หัวตะเข้')
+      buildText1('ลาดกระบัง', Icons.business),
+      buildText1('ตลาดเอี่ยม', Icons.contact_mail),
+      buildText1('หนองจอก', Icons.access_alarm),
+      buildText1('หัวตะเข้', Icons.font_download),
+      
+      
     ];
 
     return Container(
-      height: 300,
+      height: 400,
       child: DefaultTabController(
         length: widgets.length,
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            // title: Text('สาขา',style: MyStyle().titleH3(),),
-            leading: SizedBox(),
-            bottom: TabBar(
+          appBar:  TabBar(
               tabs: tabWidgets,
               labelColor: Colors.blue.shade900,
-              indicatorColor: Colors.red,
-              // indicatorWeight: 6.0,                                                                                                                                                                                                                                                  ,
+              indicatorColor: Colors.orange,
+              // indicatorWeight: 6,                                                                                                                                                                                                                                                  ,
             ),
-          ),
           body: TabBarView(children: widgets),
         ),
       ),
     );
   }
+
+  Widget buildText1(String string, IconData icons) => Column(
+    children: [Icon(icons),Text(string)],
+  );
 
   Widget buildText(BuildContext context, String string, String string2) {
     return Card(

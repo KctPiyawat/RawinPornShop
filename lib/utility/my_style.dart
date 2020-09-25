@@ -53,5 +53,20 @@ class MyStyle {
     );
   }
 
+  Widget showProductMis(String mytitle, String content, Color color) {
+    return ListTile(
+        leading: Text(
+          mytitle,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black87,fontWeight: FontWeight.bold,
+          ),
+        ),
+        title: Text(
+          content,
+          style: TextStyle(fontSize: 16, color: color, fontWeight: FontWeight.bold,),
+        ));
+  }
+
   MyStyle();
 }
