@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rawinpornshop/widget/authen.dart';
 import 'package:rawinpornshop/widget/search_product.dart';
 
 main() => runApp(MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       title: 'RawinPorn Shop',
-      home: SearchProduct(),
+      home: Authen(),
     );
   }
 }

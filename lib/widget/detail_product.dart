@@ -117,8 +117,6 @@ class _DetailProductState extends State<DetailProduct> {
       buildText1('ตลาดเอี่ยม', Icons.contact_mail),
       buildText1('หนองจอก', Icons.access_alarm),
       buildText1('หัวตะเข้', Icons.font_download),
-      
-      
     ];
 
     return Container(
@@ -126,12 +124,13 @@ class _DetailProductState extends State<DetailProduct> {
       child: DefaultTabController(
         length: widgets.length,
         child: Scaffold(
-          appBar:  TabBar(
-              tabs: tabWidgets,
-              labelColor: Colors.blue.shade900,
-              indicatorColor: Colors.orange,
-              // indicatorWeight: 6,                                                                                                                                                                                                                                                  ,
-            ),
+          appBar: TabBar(
+            isScrollable: true,
+            tabs: tabWidgets,
+            labelColor: Colors.blue.shade900,
+            indicatorColor: Colors.orange,
+            // indicatorWeight: 6.0,                                                                                                                                                                                                                                                  ,
+          ),
           body: TabBarView(children: widgets),
         ),
       ),
@@ -139,8 +138,8 @@ class _DetailProductState extends State<DetailProduct> {
   }
 
   Widget buildText1(String string, IconData icons) => Column(
-    children: [Icon(icons),Text(string)],
-  );
+        children: [Icon(icons), Text(string,style: TextStyle(fontSize: 16),)],
+      );
 
   Widget buildText(BuildContext context, String string, String string2) {
     return Card(

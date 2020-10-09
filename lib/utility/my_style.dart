@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class MyStyle {
+
+Color primaryColor = Color(0xfff17930);
+Color darkColor = Color(0xff1073b8);
+
+
   Widget buildTitleH2(String string) => Row(
         children: <Widget>[
           Padding(
