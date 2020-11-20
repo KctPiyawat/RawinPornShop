@@ -47,17 +47,17 @@ class _MyServiceState extends State<MyService> {
         child: Scaffold(
           appBar: AppBar(
             title: Text('Name Login'),
-            bottom: TabBar(indicator: BoxDecoration(color: Colors.white24),
-              tabs: tabWidgets,
-              indicatorWeight: 4.0,
-              labelColor: Colors.white,
-              labelStyle: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-              unselectedLabelColor: Colors.white54,
-              labelPadding: EdgeInsets.only(top:8)
-            ),
+            bottom: TabBar(
+                indicator: BoxDecoration(color: Colors.white24),
+                tabs: tabWidgets,
+                indicatorWeight: 4.0,
+                labelColor: Colors.white,
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                unselectedLabelColor: Colors.white54,
+                labelPadding: EdgeInsets.only(top: 8)),
           ),
           body: TabBarView(children: widgets),
         ),
