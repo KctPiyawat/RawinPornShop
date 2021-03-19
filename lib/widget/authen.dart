@@ -5,7 +5,6 @@ import 'package:rawinpornshop/utility/my_constant.dart';
 import 'package:rawinpornshop/utility/my_style.dart';
 import 'package:rawinpornshop/utility/normal_dialog.dart';
 import 'package:rawinpornshop/widget/my_service.dart';
-import 'package:rawinpornshop/widget/search_product.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Authen extends StatefulWidget {
@@ -16,6 +15,7 @@ class Authen extends StatefulWidget {
 class _AuthenState extends State<Authen> {
   String user, password;
   bool redEye = true;
+  bool showProgress = false;
 
   TextEditingController textEditingController = TextEditingController();
   FocusNode focusNode = FocusNode();
@@ -49,46 +49,65 @@ class _AuthenState extends State<Authen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Container(
-        margin: EdgeInsets.only(right: 40, bottom: 30),
-        child: FloatingActionButton(
-          onPressed: () {
-            if (user == null ||
-                user.isEmpty ||
-                password == null ||
-                password.isEmpty) {
-              normalDialog(context, 'มีช่องว่าง ? กรุณากรอกข้อมูลทุกช่อง');
-            } else {
-              checkAuthen();
-            }
-          },
-          child: Icon(
-            Icons.forward,
-            size: 36,
-          ),
+      floatingActionButton: buildLogin(context),
+      body: Stack(
+        children: [
+          buildContent(),
+          showProgress ? MyStyle().showProgress() : SizedBox(),
+        ],
+      ),
+    );
+  }
+
+  Container buildLogin(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(right: 40, bottom: 30),
+      child: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            showProgress = true;
+          });
+          if (user == null ||
+              user.isEmpty ||
+              password == null ||
+              password.isEmpty) {
+            setState(() {
+              showProgress = false;
+            });
+            normalDialog(context, 'มีช่องว่าง ? กรุณากรอกข้อมูลทุกช่อง');
+          } else {
+            checkAuthen();
+          }
+        },
+        child: Icon(
+          Icons.forward,
+          size: 36,
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: RadialGradient(
-            radius: 1.0,
-            colors: [Colors.white, MyStyle().primaryColor],
-          ),
+    );
+  }
+
+  Container buildContent() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          radius: 1.0,
+          colors: [Colors.white, MyStyle().primaryColor],
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 24),
-                width: 130,
-                child: Image.asset("images/logo.png"),
-              ),
-              buildUser(),
-              MyStyle().sizedBox16(),
-              buildPassword(),
-            ],
-          ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              margin: EdgeInsets.only(bottom: 24),
+              width: 130,
+              child: Image.asset("images/logo.png"),
+            ),
+            buildUser(),
+            MyStyle().sizedBox16(),
+            buildPassword(),
+          ],
         ),
       ),
     );
@@ -162,32 +181,46 @@ class _AuthenState extends State<Authen> {
 
   Future<Null> checkAuthen() async {
     String urlCheckUser = '${MyConstant().domain}/webapi3/api/user?code=$user';
-    await Dio().get(urlCheckUser).then((value) async {
-      print('value ====> $value');
-      if (value.toString() == '[]') {
-        normalDialog(context, 'ไม่มี $user ในระบบ');
-      } else {
-        for (var json in value.data) {
-          UserAuthenModel model = UserAuthenModel.fromJson(json);
-          String passwordKey = model.password;
-          print('passwordKey ===>> $passwordKey');
-
-          String path =
-              '${MyConstant().domain}/webapi3/api/login?type=0&key=$password';
-
-          await Dio().get(path).then((value) {
-            String passwordKey2 = value.data['Passvalue'];
-            print('passwordKey2 ===> $passwordKey2');
-            if (passwordKey == passwordKey2) {
-              // routToService(context);
-
-              saveUser();
-            } else {
-              normalDialog(context, 'Password ไม่ถูกต้อง กรุณาลองใหม่');
-            }
+    await Dio().get(urlCheckUser).then(
+      (value) async {
+        print('value ====> $value');
+        if (value.toString() == '[]') {
+          setState(() {
+            showProgress = false;
           });
+          normalDialog(context, 'ไม่มี $user ในระบบ');
+        } else {
+          for (var json in value.data) {
+            UserAuthenModel model = UserAuthenModel.fromJson(json);
+            String passwordKey = model.password;
+            print('passwordKey ===>> $passwordKey');
+
+            String path =
+                '${MyConstant().domain}/webapi3/api/login?type=0&key=$password';
+
+            await Dio().get(path).then((value) {
+              String passwordKey2 = value.data['Passvalue'];
+              print('passwordKey2 ===> $passwordKey2');
+              if (passwordKey == passwordKey2) {
+                // routToService(context);
+
+                saveUser();
+              } else {
+                setState(() {
+                  showProgress = false;
+                });
+                normalDialog(context, 'Password ไม่ถูกต้อง กรุณาลองใหม่');
+              }
+            });
+          }
         }
-      }
+      },
+    ).catchError((onError) {
+      print('########onError####');
+      setState(() {
+        showProgress = false;
+      });
+      normalDialog(context, 'กรุณาลองใหม่ ? ไม่สามารถติดต่อ Server ได้ขนะนี้');
     });
   }
 
